@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.iudx.app.AppTest" time="0.03" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.iudx.app.AppTest" time="0.027" tests="1" errors="0" skipped="0" failures="0">
   <properties>
-    <property name="java.specification.version" value="22"/>
+    <property name="java.specification.version" value="23"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="java.class.path" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/test-classes:/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/classes:/home/amarthya/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/home/amarthya/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/amarthya/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/home/amarthya/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/amarthya/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-core/25.0.6/keycloak-core-25.0.6.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-common/25.0.6/keycloak-common-25.0.6.jar:/home/amarthya/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.2/jakarta.activation-api-2.1.2.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.0/jackson-core-2.17.0.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.0/jackson-databind-2.17.0.jar:/home/amarthya/.m2/repository/net/bytebuddy/byte-buddy/1.14.9/byte-buddy-1.14.9.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.17.0/jackson-datatype-jdk8-2.17.0.jar:/home/amarthya/.m2/repository/org/eclipse/microprofile/openapi/microprofile-openapi-api/3.1.1/microprofile-openapi-api-3.1.1.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-server-spi/25.0.6/keycloak-server-spi-25.0.6.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-server-spi-private/25.0.6/keycloak-server-spi-private-25.0.6.jar:/home/amarthya/.m2/repository/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar:/home/amarthya/.m2/repository/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar:/home/amarthya/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/amarthya/.m2/repository/io/minio/minio/8.5.13/minio-8.5.13.jar:/home/amarthya/.m2/repository/com/carrotsearch/thirdparty/simple-xml-safe/2.7.1/simple-xml-safe-2.7.1.jar:/home/amarthya/.m2/repository/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.jar:/home/amarthya/.m2/repository/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar:/home/amarthya/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/amarthya/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/amarthya/.m2/repository/org/checkerframework/checker-qual/3.43.0/checker-qual-3.43.0.jar:/home/amarthya/.m2/repository/com/google/errorprone/error_prone_annotations/2.28.0/error_prone_annotations-2.28.0.jar:/home/amarthya/.m2/repository/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar:/home/amarthya/.m2/repository/com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar:/home/amarthya/.m2/repository/com/squareup/okio/okio/3.6.0/okio-3.6.0.jar:/home/amarthya/.m2/repository/com/squareup/okio/okio-jvm/3.6.0/okio-jvm-3.6.0.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.9.10/kotlin-stdlib-common-1.9.10.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.jar:/home/amarthya/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.21/kotlin-stdlib-jdk7-1.8.21.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.18.0/jackson-annotations-2.18.0.jar:/home/amarthya/.m2/repository/org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar:/home/amarthya/.m2/repository/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar:/home/amarthya/.m2/repository/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar:/home/amarthya/.m2/repository/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar:/home/amarthya/.m2/repository/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/home/amarthya/.m2/repository/org/xerial/snappy/snappy-java/1.1.10.7/snappy-java-1.1.10.7.jar:"/>
     <property name="java.vm.vendor" value="Arch Linux"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://openjdk.org/"/>
     <property name="os.name" value="Linux"/>
-    <property name="java.vm.specification.version" value="22"/>
+    <property name="java.vm.specification.version" value="23"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="GB"/>
-    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-22-openjdk/lib"/>
-    <property name="sun.java.command" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire/surefirebooter-20241027224147126_3.jar /home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire 2024-10-27T22-41-47_068-jvmRun1 surefire-20241027224147126_1tmp surefire_0-20241027224147126_2tmp"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-23-openjdk/lib"/>
+    <property name="sun.java.command" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire/surefirebooter-20241205161855398_3.jar /home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire 2024-12-05T16-18-55_333-jvmRun1 surefire-20241205161855398_1tmp surefire_0-20241205161855398_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/test-classes:/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/classes:/home/amarthya/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/home/amarthya/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/amarthya/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/home/amarthya/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/amarthya/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-core/25.0.6/keycloak-core-25.0.6.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-common/25.0.6/keycloak-common-25.0.6.jar:/home/amarthya/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.2/jakarta.activation-api-2.1.2.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.0/jackson-core-2.17.0.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.0/jackson-databind-2.17.0.jar:/home/amarthya/.m2/repository/net/bytebuddy/byte-buddy/1.14.9/byte-buddy-1.14.9.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.17.0/jackson-datatype-jdk8-2.17.0.jar:/home/amarthya/.m2/repository/org/eclipse/microprofile/openapi/microprofile-openapi-api/3.1.1/microprofile-openapi-api-3.1.1.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-server-spi/25.0.6/keycloak-server-spi-25.0.6.jar:/home/amarthya/.m2/repository/org/keycloak/keycloak-server-spi-private/25.0.6/keycloak-server-spi-private-25.0.6.jar:/home/amarthya/.m2/repository/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar:/home/amarthya/.m2/repository/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar:/home/amarthya/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/amarthya/.m2/repository/io/minio/minio/8.5.13/minio-8.5.13.jar:/home/amarthya/.m2/repository/com/carrotsearch/thirdparty/simple-xml-safe/2.7.1/simple-xml-safe-2.7.1.jar:/home/amarthya/.m2/repository/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.jar:/home/amarthya/.m2/repository/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar:/home/amarthya/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/amarthya/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/amarthya/.m2/repository/org/checkerframework/checker-qual/3.43.0/checker-qual-3.43.0.jar:/home/amarthya/.m2/repository/com/google/errorprone/error_prone_annotations/2.28.0/error_prone_annotations-2.28.0.jar:/home/amarthya/.m2/repository/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar:/home/amarthya/.m2/repository/com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar:/home/amarthya/.m2/repository/com/squareup/okio/okio/3.6.0/okio-3.6.0.jar:/home/amarthya/.m2/repository/com/squareup/okio/okio-jvm/3.6.0/okio-jvm-3.6.0.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.9.10/kotlin-stdlib-common-1.9.10.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.jar:/home/amarthya/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/home/amarthya/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.21/kotlin-stdlib-jdk7-1.8.21.jar:/home/amarthya/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.18.0/jackson-annotations-2.18.0.jar:/home/amarthya/.m2/repository/org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar:/home/amarthya/.m2/repository/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar:/home/amarthya/.m2/repository/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar:/home/amarthya/.m2/repository/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar:/home/amarthya/.m2/repository/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/home/amarthya/.m2/repository/org/xerial/snappy/snappy-java/1.1.10.7/snappy-java-1.1.10.7.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/home/amarthya"/>
     <property name="user.language" value="en"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
-    <property name="java.version.date" value="2024-07-16"/>
-    <property name="java.home" value="/usr/lib/jvm/java-22-openjdk"/>
+    <property name="java.version.date" value="2024-09-17"/>
+    <property name="java.home" value="/usr/lib/jvm/java-23-openjdk"/>
     <property name="file.separator" value="/"/>
     <property name="basedir" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire/surefirebooter-20241027224147126_3.jar"/>
+    <property name="surefire.real.class.path" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension/target/surefire/surefirebooter-20241205161855398_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="java.runtime.version" value="22.0.2+9"/>
+    <property name="java.runtime.version" value="23"/>
     <property name="user.name" value="amarthya"/>
     <property name="stdout.encoding" value="UTF-8"/>
     <property name="path.separator" value=":"/>
-    <property name="os.version" value="6.1.112-1-MANJARO"/>
+    <property name="os.version" value="6.1.119-1-MANJARO"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
     <property name="localRepository" value="/home/amarthya/.m2/repository"/>
     <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
     <property name="java.io.tmpdir" value="/tmp"/>
-    <property name="java.version" value="22.0.2"/>
+    <property name="java.version" value="23"/>
     <property name="user.dir" value="/home/amarthya/IUDX/superset/Keycloak/keycloak-custom-extension"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
@@ -49,9 +49,9 @@
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="UTF-8"/>
     <property name="java.vendor" value="Arch Linux"/>
-    <property name="java.vm.version" value="22.0.2+9"/>
+    <property name="java.vm.version" value="23"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
-    <property name="java.class.version" value="66.0"/>
+    <property name="java.class.version" value="67.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="com.iudx.app.AppTest" time="0.016"/>
+  <testcase name="shouldAnswerWithTrue" classname="com.iudx.app.AppTest" time="0.014"/>
 </testsuite>

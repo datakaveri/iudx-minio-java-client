@@ -35,7 +35,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 
     // ? Initialize Minio Client
     this.minioClient = MinioClient.builder()
-          .endpoint("http://172.19.0.1:9000")
+          .endpoint(System.getenv("MINIO_API_URL"))
           .region("in")  // MinIO server address
           .credentials("myminioadmin", "minio-secret-key-change-me")  // Access key and secret key
           .build();
@@ -53,55 +53,33 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     String userId = event.getUserId();
     logger.info("New user registered: {}", userId);
 
-    // ? Minio expects users to have policies. So we allocate newly registered
-    // ? Keycloak users to a group
-    // ? https://min.io/docs/minio/macos/operations/external-iam/configure-keycloak-identity-management.html#configure-minio-for-keycloak-authentication
-    // ? Use the above link for reference
-    addUserToReadWriteGroup(userId);
-    createUserBucket(userId);
-  }
-
-  private void addUserToReadWriteGroup(String userId) {
-    UserModel user = session.users().getUserById(session.getContext().getRealm(), userId);
-    GroupModel group = session.groups().getGroupByName(session.getContext().getRealm(), null, "readonly");
-
-    if (group != null && user != null) {
-      user.joinGroup(group);
-      logger.info("User {} added to group {}", userId, group.getName());
-    } else {
-      logger.warn("Group or user not found for adding to group");
+    UserModel user = getUserById(userId);
+    if (user != null) {
+        setUserPolicyAttribute(user);
+//        createInitialBucketPolicy(user.getEmail());
     }
   }
 
-  private void createUserBucket(String userId) {
+  private UserModel getUserById(String userId) {
+    return session.users().getUserById(session.getContext().getRealm(), userId);
+  }
+
+  private void setUserPolicyAttribute(UserModel user) {
+    user.setSingleAttribute("policy", user.getEmail());
+    logger.info("Policy attribute set for user: {}", user.getEmail());
+  }
+
+  private void createInitialBucketPolicy(String userEmail) {
     try {
-      UserModel user = session.users().getUserById(session.getContext().getRealm(), userId);
-      // ? Creating a unique bucket for a user
-      String bucketName = user.getUsername() + "-bucket";
-      boolean bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-
-      if (!bucketExists) {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-        logger.info("Bucket {} created successfully", bucketName);
-
-        setBucketPolicy(bucketName);
-      } else {
-        logger.info("Bucket {} already exists", bucketName);
-      }
+        String policyJson = buildInitialPolicy("example-bucket");
+        applyBucketPolicy("example-bucket", policyJson);
+        logger.info("Initial bucket policy created for user: {}", userEmail);
     } catch (Exception e) {
-      logger.error("Error creating user bucket: ", e);
+        logger.error("Error creating initial bucket policy: ", e);
     }
   }
 
-  private void setBucketPolicy(String bucketName) throws Exception {
-    String policy = createBucketPolicy(bucketName);
-    minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
-    logger.info("Bucket policy for {} added successfully", bucketName);
-  }
-
-  private String createBucketPolicy(String bucketName) throws JsonProcessingException {
-
-    // ? Creating a bucket policy that gives access to single user
+  private String buildInitialPolicy(String bucketName) {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode policyJson = mapper.createObjectNode();
 
@@ -109,24 +87,37 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 
     ObjectNode statementJson = mapper.createObjectNode();
     statementJson.put("Effect", "Allow");
+    statementJson.set("Principal", mapper.createObjectNode().put("AWS", "*"));
 
-    // Set the Principal to the specific user
-    ObjectNode principalJson = mapper.createObjectNode();
-    principalJson.put("AWS", "arn:aws:iam::*:user/" + bucketName.replace("-bucket", ""));
-    statementJson.set("Principal", principalJson);
-
-    List<String> actions = Arrays.asList(
-      "s3:GetObject",
-      "s3:DeleteObject",
-      "s3:PutObject"
-    );
     ArrayNode actionsArray = statementJson.putArray("Action");
-    actions.forEach(actionsArray::add);
+    actionsArray.add("s3:GetObject");
 
     ArrayNode resourceArray = statementJson.putArray("Resource");
     resourceArray.add("arn:aws:s3:::" + bucketName + "/*");
 
-    return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(policyJson);
+    ArrayNode statementArray = policyJson.putArray("Statement");
+    statementArray.add(statementJson);
+
+    try {
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(policyJson);
+    } catch (JsonProcessingException e) {
+        logger.error("Error creating policy JSON: ", e);
+        return "{}";
+    }
+  }
+
+  private void applyBucketPolicy(String bucketName, String policyJson) {
+    try {
+        minioClient.setBucketPolicy(
+            SetBucketPolicyArgs.builder()
+                .bucket(bucketName)
+                .config(policyJson)
+                .build()
+        );
+        logger.info("Policy applied successfully to bucket: {}", bucketName);
+    } catch (Exception e) {
+        logger.error("Error applying bucket policy: ", e);
+    }
   }
 
   @Override
