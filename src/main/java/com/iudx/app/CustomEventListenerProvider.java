@@ -1,26 +1,23 @@
 package com.iudx.app;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
+
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.body.RequestBodyEntity;
 import io.minio.MinioClient;
-import io.minio.SetBucketPolicyArgs;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventType;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.admin.AdminEvent;
-import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 
 public class CustomEventListenerProvider implements EventListenerProvider {
@@ -32,13 +29,16 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 
   public CustomEventListenerProvider(KeycloakSession session) {
     this.session = session;
-
-    // ? Initialize Minio Client
-    this.minioClient = MinioClient.builder()
-          .endpoint(System.getenv("MINIO_API_URL"))
-          .region("in")  // MinIO server address
-          .credentials("myminioadmin", "minio-secret-key-change-me")  // Access key and secret key
-          .build();
+    try {
+      this.minioClient = MinioClient.builder()
+            .endpoint(System.getenv("MINIO_API_URL"))
+            .region("in")  // MinIO server address
+            .credentials(System.getenv("MINIO_ROOT_USER"), System.getenv("MINIO_ROOT_PASSWORD"))  // Access key and secret key
+            .build();
+    } catch (IllegalArgumentException e) {
+      logger.error("Failed to initialize MinioClient: ", e);
+      throw new RuntimeException("MinioClient initialization failed", e);
+    }
   }
 
   @Override
@@ -46,17 +46,51 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     // ? On user registration create a new bucket
     if (event.getType() == EventType.REGISTER) {
       handleNewUserRegistration(event);
+    } else if (event.getType() == EventType.LOGIN) {
+      handleOldUserLogins(event);
     }
   }
 
   private void handleNewUserRegistration(Event event) {
-    String userId = event.getUserId();
-    logger.info("New user registered: {}", userId);
+    try {
+      String userId = event.getUserId();
+      logger.info("New user registered: {}", userId);
 
-    UserModel user = getUserById(userId);
-    if (user != null) {
+      UserModel user = getUserById(userId);
+      if (user != null) {
         setUserPolicyAttribute(user);
-//        createInitialBucketPolicy(user.getEmail());
+        createUserPolicy(user.getEmail());
+      } else {
+        logger.error("User not found for ID: {}", userId);
+      }
+    } catch (Exception e) {
+      logger.error("Error handling new user registration: ", e);
+    }
+  }
+
+  private void handleOldUserLogins(Event event) {
+    try {
+      String userId = event.getUserId();
+
+      UserModel user = getUserById(userId);
+
+      logger.info("Logged in user: " + user.getEmail());
+
+
+      if(!user.getAttributes().containsKey("policy") || !user.getAttributes().get("policy").contains(user.getEmail())) {
+
+        if(!user.getAttributes().containsKey("policy")) {
+          logger.info("No existing user policies");
+          logger.info("Setting policy attribute for existing user " + user.getEmail());
+          setUserPolicyAttribute(user);
+        }
+
+        logger.info("Creating named policy for " + user.getEmail());
+        createUserPolicy(user.getEmail());
+      }
+
+    } catch (Exception e) {
+      logger.error("Error handling old login: ", e);
     }
   }
 
@@ -69,54 +103,60 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     logger.info("Policy attribute set for user: {}", user.getEmail());
   }
 
-  private void createInitialBucketPolicy(String userEmail) {
+  private void createUserPolicy(String email) {
     try {
-        String policyJson = buildInitialPolicy("example-bucket");
-        applyBucketPolicy("example-bucket", policyJson);
-        logger.info("Initial bucket policy created for user: {}", userEmail);
+      // URL for the POST request
+      URL url = new URL("http://172.17.0.1:3000/create-user-policy");
+
+      // Open a connection
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+      // Set the request method to POST
+      conn.setRequestMethod("POST");
+
+      // Set headers
+      conn.setRequestProperty("Authorization", "super_confusing");
+      conn.setRequestProperty("Content-Type", "application/json");
+
+      // Enable output for the request body
+      conn.setDoOutput(true);
+
+      // JSON payload
+      String jsonPayload = "{\n" +
+        "\t\"email\": \"" + email + "\"\n" +
+        "}";
+
+      // Write the JSON payload to the output stream
+      try (OutputStream os = conn.getOutputStream()) {
+        byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+        os.write(input, 0, input.length);
+      }
+
+      // Check the response code
+      int responseCode = conn.getResponseCode();
+      System.out.println("Response Code: " + responseCode);
+
+      logger.info("Creating named policy for " + email);
+
+      // Close the connection
+      conn.disconnect();
+
     } catch (Exception e) {
-        logger.error("Error creating initial bucket policy: ", e);
+      e.printStackTrace();
     }
   }
 
-  private String buildInitialPolicy(String bucketName) {
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode policyJson = mapper.createObjectNode();
-
-    policyJson.put("Version", "2012-10-17");
-
-    ObjectNode statementJson = mapper.createObjectNode();
-    statementJson.put("Effect", "Allow");
-    statementJson.set("Principal", mapper.createObjectNode().put("AWS", "*"));
-
-    ArrayNode actionsArray = statementJson.putArray("Action");
-    actionsArray.add("s3:GetObject");
-
-    ArrayNode resourceArray = statementJson.putArray("Resource");
-    resourceArray.add("arn:aws:s3:::" + bucketName + "/*");
-
-    ArrayNode statementArray = policyJson.putArray("Statement");
-    statementArray.add(statementJson);
-
+  private void attachBucketToUserPolicy(String email) {
     try {
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(policyJson);
-    } catch (JsonProcessingException e) {
-        logger.error("Error creating policy JSON: ", e);
-        return "{}";
-    }
-  }
+      RequestBodyEntity response = Unirest.post(System.getenv("MINIO_POLICY_MIDDLEWARE_URL")+"/attach-bucket-to-user-policy")
+        .header("Content-Type", "application/json")
+        .header("Authorization", "super_confusing")
+        .body("{\n  \"email\": \"" + email + "\",\n  \"bucket\": \"barun-bucket\"\n}");
 
-  private void applyBucketPolicy(String bucketName, String policyJson) {
-    try {
-        minioClient.setBucketPolicy(
-            SetBucketPolicyArgs.builder()
-                .bucket(bucketName)
-                .config(policyJson)
-                .build()
-        );
-        logger.info("Policy applied successfully to bucket: {}", bucketName);
+      logger.info("Bucket attached successfully to user policy for email: {}", email);
     } catch (Exception e) {
-        logger.error("Error applying bucket policy: ", e);
+      logger.error("Error attaching bucket to user policy for email {}: ", email, e);
+      throw new RuntimeException("Failed to attach bucket to user policy", e);
     }
   }
 

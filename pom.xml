@@ -67,6 +67,13 @@
           <version>1.7.36</version>
       </dependency>
 
+    <!-- Unirest -->
+    <dependency>
+      <groupId>com.mashape.unirest</groupId>
+      <artifactId>unirest-java</artifactId>
+      <version>1.4.9</version>
+    </dependency>
+
     <!-- MinIO Client -->
     <dependency>
       <groupId>io.minio</groupId>
