@@ -59,7 +59,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       UserModel user = getUserById(userId);
       if (user != null) {
         setUserPolicyAttribute(user);
-        createUserPolicy(user.getEmail());
+        createUserPolicy(user.getId());
       } else {
         logger.error("User not found for ID: {}", userId);
       }
@@ -76,8 +76,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 
       logger.info("Logged in user: " + user.getEmail());
 
-
-      if(!user.getAttributes().containsKey("policy") || !user.getAttributes().get("policy").contains(user.getEmail())) {
+      if(!user.getAttributes().containsKey("policy") || !user.getAttributes().get("policy").contains(user.getId())) {
 
         if(!user.getAttributes().containsKey("policy")) {
           logger.info("No existing user policies");
@@ -86,7 +85,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
         }
 
         logger.info("Creating named policy for " + user.getEmail());
-        createUserPolicy(user.getEmail());
+        createUserPolicy(user.getId());
       }
 
     } catch (Exception e) {
@@ -99,11 +98,12 @@ public class CustomEventListenerProvider implements EventListenerProvider {
   }
 
   private void setUserPolicyAttribute(UserModel user) {
-    user.setSingleAttribute("policy", user.getEmail());
+    user.setSingleAttribute("policy", user.getId());
+    logger.info("User ID for user {} is {}", user.getEmail(), user.getId());
     logger.info("Policy attribute set for user: {}", user.getEmail());
   }
 
-  private void createUserPolicy(String email) {
+  private void createUserPolicy(String userId) {
     try {
       // URL for the POST request
       URL url = new URL("http://172.17.0.1:3000/create-user-policy");
@@ -123,7 +123,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 
       // JSON payload
       String jsonPayload = "{\n" +
-        "\t\"email\": \"" + email + "\"\n" +
+        "\t\"email\": \"" + userId + "\"\n" +
         "}";
 
       // Write the JSON payload to the output stream
@@ -136,7 +136,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       int responseCode = conn.getResponseCode();
       System.out.println("Response Code: " + responseCode);
 
-      logger.info("Creating named policy for " + email);
+      logger.info("Creating named policy for " + userId);
 
       // Close the connection
       conn.disconnect();
