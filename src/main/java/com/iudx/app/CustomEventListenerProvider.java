@@ -106,7 +106,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
   private void createUserPolicy(String userId) {
     try {
       // URL for the POST request
-      URL url = new URL("http://172.17.0.1:3000/create-user-policy");
+      URL url = new URL(System.getenv("MINIO_POLICY_MIDDLEWARE_URL"));
 
       // Open a connection
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -115,7 +115,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       conn.setRequestMethod("POST");
 
       // Set headers
-      conn.setRequestProperty("Authorization", "super_confusing");
+      conn.setRequestProperty("Authorization", "MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY");
       conn.setRequestProperty("Content-Type", "application/json");
 
       // Enable output for the request body
