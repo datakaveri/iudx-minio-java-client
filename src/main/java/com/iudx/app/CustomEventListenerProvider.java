@@ -106,7 +106,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
   private void createUserPolicy(String userId) {
     try {
       // URL for the POST request
-      URL url = new URL(System.getenv("MINIO_POLICY_MIDDLEWARE_URL"));
+      URL url = new URL(System.getenv("MINIO_POLICY_MIDDLEWARE_URL") + "/create-user-policy");
 
       // Open a connection
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -150,7 +150,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     try {
       RequestBodyEntity response = Unirest.post(System.getenv("MINIO_POLICY_MIDDLEWARE_URL")+"/attach-bucket-to-user-policy")
         .header("Content-Type", "application/json")
-        .header("Authorization", "super_confusing")
+        .header("Authorization", System.getenv("MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY"))
         .body("{\n  \"email\": \"" + email + "\",\n  \"bucket\": \"barun-bucket\"\n}");
 
       logger.info("Bucket attached successfully to user policy for email: {}", email);
