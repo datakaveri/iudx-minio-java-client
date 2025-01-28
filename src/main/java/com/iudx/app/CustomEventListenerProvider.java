@@ -1,8 +1,6 @@
 package com.iudx.app;
 
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.body.RequestBodyEntity;
 import io.minio.MinioClient;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventType;
@@ -115,7 +113,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       conn.setRequestMethod("POST");
 
       // Set headers
-      conn.setRequestProperty("Authorization", "MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY");
+      conn.setRequestProperty("Authorization", System.getenv("MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY"));
       conn.setRequestProperty("Content-Type", "application/json");
 
       // Enable output for the request body
@@ -130,11 +128,13 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       try (OutputStream os = conn.getOutputStream()) {
         byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
         os.write(input, 0, input.length);
+      } catch (Exception e) {
+        logger.info("Error " + e);
       }
 
       // Check the response code
       int responseCode = conn.getResponseCode();
-      System.out.println("Response Code: " + responseCode);
+      logger.info("Response Code: " + responseCode);
 
       logger.info("Creating named policy for " + userId);
 
@@ -146,19 +146,6 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     }
   }
 
-  private void attachBucketToUserPolicy(String email) {
-    try {
-      RequestBodyEntity response = Unirest.post(System.getenv("MINIO_POLICY_MIDDLEWARE_URL")+"/attach-bucket-to-user-policy")
-        .header("Content-Type", "application/json")
-        .header("Authorization", System.getenv("MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY"))
-        .body("{\n  \"email\": \"" + email + "\",\n  \"bucket\": \"barun-bucket\"\n}");
-
-      logger.info("Bucket attached successfully to user policy for email: {}", email);
-    } catch (Exception e) {
-      logger.error("Error attaching bucket to user policy for email {}: ", email, e);
-      throw new RuntimeException("Failed to attach bucket to user policy", e);
-    }
-  }
 
   @Override
   public void onEvent(AdminEvent adminEvent, boolean b) {
