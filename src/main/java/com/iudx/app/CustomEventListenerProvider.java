@@ -2,6 +2,7 @@ package com.iudx.app;
 
 
 import io.minio.MinioClient;
+import org.json.JSONObject;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventType;
 import org.keycloak.events.EventListenerProvider;
@@ -58,6 +59,9 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       if (user != null) {
         setUserPolicyAttribute(user);
         createUserPolicy(user.getId());
+
+        logger.info("Creating user's bucket for " + user.getEmail());
+        attachBucketToUserPolicy(user.getId());
       } else {
         logger.error("User not found for ID: {}", userId);
       }
@@ -80,10 +84,16 @@ public class CustomEventListenerProvider implements EventListenerProvider {
           logger.info("No existing user policies");
           logger.info("Setting policy attribute for existing user " + user.getEmail());
           setUserPolicyAttribute(user);
+        } else {
+          logger.info("Handling old user");
+          logger.info(String.valueOf(user.getAttributes().get("policy")));
         }
 
         logger.info("Creating named policy for " + user.getEmail());
         createUserPolicy(user.getId());
+
+        logger.info("Creating user's bucket for " + user.getEmail());
+        attachBucketToUserPolicy(user.getId());
       }
 
     } catch (Exception e) {
@@ -119,10 +129,14 @@ public class CustomEventListenerProvider implements EventListenerProvider {
       // Enable output for the request body
       conn.setDoOutput(true);
 
+
       // JSON payload
       String jsonPayload = "{\n" +
-        "\t\"email\": \"" + userId + "\"\n" +
+        "\t\"userId\": \"" + userId + "\"\n" +
         "}";
+
+      logger.info("JSON payload for '/create-user-policy'");
+      logger.info(jsonPayload);
 
       // Write the JSON payload to the output stream
       try (OutputStream os = conn.getOutputStream()) {
@@ -144,6 +158,54 @@ public class CustomEventListenerProvider implements EventListenerProvider {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+    private void attachBucketToUserPolicy(String userId){
+      try {
+        // URL for the POST request
+        URL url = new URL(System.getenv("MINIO_POLICY_MIDDLEWARE_URL") + "/attach-bucket-to-user-policy");
+
+        // Open a connection
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // Set the request method to POST
+        conn.setRequestMethod("POST");
+
+        // Set headers
+        conn.setRequestProperty("Authorization", System.getenv("MINIO_POLICY_MIDDLEWARE_AUTHORIZATION_KEY"));
+        conn.setRequestProperty("Content-Type", "application/json");
+
+        // Enable output for the request body
+        conn.setDoOutput(true);
+
+        JSONObject jsonPayload = new JSONObject();
+        jsonPayload.put("userId", userId);
+        jsonPayload.put("bucket", userId + "-bucket");
+        jsonPayload.put("createBucket", true);
+
+        logger.info("JSON payload for '/attach-bucket-to-user-policy'");
+        logger.info(jsonPayload.toString());
+
+        // Write the JSON payload to the output stream
+        try (OutputStream os = conn.getOutputStream()) {
+          byte[] input = jsonPayload.toString().getBytes(StandardCharsets.UTF_8);
+          os.write(input, 0, input.length);
+        } catch (Exception e) {
+          logger.info("Error " + e);
+        }
+
+        // Check the response code
+        int responseCode = conn.getResponseCode();
+        logger.info("Response Code: " + responseCode);
+
+        logger.info("Creating new bucket for for " + userId);
+
+        // Close the connection
+        conn.disconnect();
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
   }
 
 
